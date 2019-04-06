@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+    <url>http:///</url>
+    <dbihost>localhost</dbihost>
+    <dbiname>girls</dbiname>
+    <dbiuser>root</dbiuser>
+    <dbipass>new_password</dbipass>
+</root>
