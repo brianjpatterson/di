@@ -1,36 +1,21 @@
 <?php
 
-	class Sanders {
+    class Sanders {	    
+        private static $_cfg = array();
+        public function get($item) { return self::$_cfg[$item]; }
+        public function set($item, $value) { self::$_cfg[$item] = $value; }
+        public function load($m) { require($m); }
+    }
 
-	        private static $_cfg = array();
-	        
-	        //public function __construct() { }
-	        //public function __destruct() { }
-	        
-	        public function get($item) {
-	                return self::$_cfg[$item];
-	        }
-	        public function set($item, $value) {
-	               self::$_cfg[$item] = $value;
-	        }
-	        
-	        public function load($m) {
-	          require($m);      
-	        }
-	}
-
-	class Xml extends Sanders {
+    class Xml extends Sanders {
 
         protected $_xml;
 
-        function __construct($file = '_cfg.xml', $path = './') {
-               
+        function __construct($file = '_cfg.xml', $path = './') {       
                 $this->set('defaultXmlFilename', $file);
                 $this->set('configPath', $path);
                 $this->set('xmlData', $this->xmlParse($this->getXml()));
         }
-
-        //function __destruct() {}
 
         public function getXml($file = null) {
                 $file = $file === null ? $this->get('defaultXmlFilename') : $file;
@@ -47,46 +32,33 @@
                         return $out;
         }
 
+    }
+
+    class Dwarp {
+
+        static protected $box = array();
+
+	public function __construct(array $parameters = array()) { $this->parameters = $parameters; }
+
+	public function getCfg() { return $this->parameters['dwarp.cfg']; }
+
+	public function getDIC() {
+		if (isset(self::$box['self'])) {
+			return self::$box['self'];
+		}
+
+		$class = $this->parameters['dwarp.class'];
+
+		$dwarp = new $class();
+		$dwarp->setCfg($this->getCfg());
+		$dwarp->connect();
+
+		return self::$box['self'] = $dwarp;
 	}
-
-	class Dwarp {
-
-		static protected $box = array();
-
-		public function __construct(array $parameters = array()) {
-			$this->parameters = $parameters;
-			
-		}
-
-		public function getCfg() {
-			return $this->parameters['dwarp.cfg'];
-		}
-
-		public function getDIC() {
-			if (isset(self::$box['self'])) {
-				return self::$box['self'];
-			}
-
-			$class = $this->parameters['dwarp.class'];
-
-			$dwarp = new $class();
-			$dwarp->setCfg($this->getCfg());
-			$dwarp->connect();
-
-			return self::$box['self'] = $dwarp;
-		}
-	}
-
-
-	$kernel = new Sanders();
-	$xml = new Xml();
-
-	$kernel->load('./dWarpDB.php');
-
-	$dwarp = new Dwarp(array(
-						'dwarp.class'=>'DwarpDB',
-						'dwarp.cfg'=> $xml->get('xmlData')
-					  ));
-
-	$dbi = $dwarp->getDIC();
-
+    }
+    //**  RUNTIME **//
+    $kernel = new Sanders();
+    $xml = new Xml();
+    $kernel->load('./dWarpDB.php');
+    $dwarp = new Dwarp(array('dwarp.class'=>'DwarpDB','dwarp.cfg'=> $xml->get('xmlData')));
+    $dbi = $dwarp->getDIC();
