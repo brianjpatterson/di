@@ -3,7 +3,7 @@
 <root>
     <url>http:///</url>
     <dbihost>localhost</dbihost>
-    <dbiname>girls</dbiname>
+    <dbiname>mydb</dbiname>
     <dbiuser>root</dbiuser>
     <dbipass>new_password</dbipass>
 </root>
